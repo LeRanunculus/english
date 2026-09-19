@@ -374,10 +374,32 @@ document.getElementById('q').oninput=render;
 render();
 
 /* ===== PWA: 서비스워커 등록 · 캐시 버전 표시 · 음성 선캐시 ===== */
-const CACHEVER='english-v10';
+const CACHEVER='english-v11';
 (function(){
   const ver=document.getElementById('swver'), off=document.getElementById('offl');
   function vtext(t,bad){ if(!ver)return; ver.textContent=t; ver.classList.toggle('on',!bad); }
+
+  /* ⭐ 버전이 어긋나면 **빠져나올 길**을 준다 (2026-09-19 실측으로 추가).
+     SW 가 v10 인데 화면이 v8 캐시본인 상태를 실제로 만났다. 칩이 알려주기는 했지만
+     홈 화면 앱에는 주소창도, 당겨서 새로고침도 없어서 사용자가 할 수 있는 게 없었다.
+     ⚠️ 캐시를 지우지 않는다 — 지웠다가 네트워크가 안 되면 오프라인에서 앱이 아예 안 열린다.
+        대신 index.html 만 network 로 다시 받아(서비스워커가 캐시에 갱신해 준다) 새로고침한다. */
+  let freshening=false;
+  async function freshen(){
+    if(freshening)return; freshening=true;
+    if(ver) ver.textContent='새 판 받는 중…';
+    try{ if(navigator.onLine) await fetch('index.html',{cache:'reload'}); }catch(e){}
+    location.reload();
+  }
+  function offerFreshen(live){
+    vtext('⚠️ 새 판 있음 ('+live+') · 눌러서 새로고침', true);
+    if(ver){ ver.style.cursor='pointer'; ver.onclick=freshen; }
+    /* 온라인이면 한 번은 알아서 받아 온다. 세션당 1회로 묶어 무한 새로고침을 막는다. */
+    let done=false;
+    try{ done = sessionStorage.getItem('eng:freshen')==='1'; sessionStorage.setItem('eng:freshen','1'); }
+    catch(e){ done=true; }
+    if(!done && navigator.onLine) freshen();
+  }
   if(!('serviceWorker' in navigator)){
     vtext('● SW 미지원',true);
     if(off){ off.textContent='오프라인 불가'; }
@@ -391,7 +413,8 @@ const CACHEVER='english-v10';
       const ch=new MessageChannel();
       ch.port1.onmessage=function(e){
         const live=(e.data&&e.data.cache)||'?';
-        vtext('● '+live+(live===CACHEVER?'':' ⚠️ 화면은 '+CACHEVER), live!==CACHEVER);
+        if(live===CACHEVER){ vtext('● '+live,false); return; }
+        offerFreshen(live);            /* 화면이 낡았다 — 알리기만 하지 말고 길을 준다 */
       };
       sw.postMessage('version',[ch.port2]);
     }catch(e){ vtext('● '+CACHEVER,true); }
