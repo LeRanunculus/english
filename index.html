@@ -29,8 +29,18 @@ input[type=search]{width:170px}
 .w{font-size:19px;font-weight:700;letter-spacing:-.3px}
 .ipa{color:var(--sub);font-size:13px}
 .kor{color:var(--sub);font-size:13px}
-.spk{border:1px solid var(--line);background:#fff;border-radius:7px;width:28px;height:28px;cursor:pointer;font-size:13px;line-height:1;color:var(--sub);padding:0}
-.spk:hover{background:#f4f6f8;color:var(--ink)}
+/* ⭐ 탭 타겟 (2026-09-19) — 28x28 이었다. 폰에서 「너무 작고 애매하다」는 지적을 받았다.
+   애플·구글 권장 최소는 44x44 다. 색도 회색 테두리+회색 글자라 눌러도 되는 것으로 안 읽혔다. */
+.spk{border:1px solid #cfe0fb;background:#eef4ff;border-radius:12px;width:44px;height:44px;
+  cursor:pointer;font-size:15px;line-height:1;color:var(--blue);padding:0;flex:none;
+  -webkit-tap-highlight-color:transparent;transition:transform .08s,background .12s}
+.spk:hover{background:#dfeaff}
+.spk:active{transform:scale(.92);background:#cfe0fb}
+/* 재생 중인 버튼을 표시한다 — 폰에서는 상태표시줄(#astat)이 눈에 안 들어온다 */
+.spk.playing,.spk2.playing{background:var(--blue);border-color:var(--blue);color:#fff}
+/* 예문의 ▶ 는 문장 끝에 붙어 있었다. 오른쪽으로 띄워 글과 버튼의 경계를 분명히 한다 */
+.ex .spk{float:right;margin-left:10px;margin-top:-2px}
+.ex::after{content:"";display:block;clear:both}
 .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:5px;font-weight:600;margin-left:auto}
 .t단어{background:#e7f0fa;color:#1e4e8c}.t숙어{background:#fff2cc;color:#8a6100}
 .t슬랭{background:#fce4ec;color:#a01048}.t스몰토크{background:#e8f5e9;color:#1b6b2e}
@@ -40,8 +50,13 @@ input[type=search]{width:170px}
 .meta{margin-top:8px;font-size:11px;color:var(--mut);display:flex;gap:10px;flex-wrap:wrap}
 .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#dfe3e8;margin-right:2px}
 .dot.f{background:var(--green)}
-.hide .mean,.hide .ex{filter:blur(5px);cursor:pointer;user-select:none}
-.hide .mean.show,.hide .ex.show{filter:none}
+/* ⚠️ 예전에는 filter:blur 였다. 그런데 `.ex` 안에 ▶ 버튼이 들어 있어서 **버튼까지 흐려졌다.**
+   filter 는 렌더된 하위 전체에 걸려 자식이 되돌릴 수 없다 -> 글자에만 걸리는 방식으로 바꾼다. */
+.hide .mean,.hide .ex,.hide .ex .exk{color:transparent;text-shadow:0 0 9px rgba(26,29,35,.5);
+  cursor:pointer;user-select:none}
+.hide .ex .spk{text-shadow:none}
+.hide .mean.show,.hide .ex.show{color:var(--ink);text-shadow:none}
+.hide .ex.show .exk{color:var(--sub);text-shadow:none}
 .due{color:var(--red);font-weight:600}
 .dia{margin-top:9px;border-top:1px solid #f1f2f4;padding-top:8px}
 .dtog{background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer;padding:0;font-family:inherit;font-weight:600}
@@ -54,6 +69,51 @@ input[type=search]{width:170px}
 .extra{background:#fffdf5;border-color:#f0e2b8}
 .empty{padding:34px;text-align:center;color:var(--sub);font-size:14px}
 .bar{position:sticky;top:0;background:var(--bg);padding-bottom:8px;z-index:5}
+
+/* ⭐⭐ 폰 가독성 (2026-09-19) — 실제 폰에서 보고 고친 것들.
+   ⚠️ input 의 font-size 가 16px 미만이면 **사파리가 탭할 때 페이지를 확대한다.** 그게 제일 거슬렸다. */
+.spk2{border:1px solid #cfe0fb;background:#eef4ff;border-radius:999px;width:34px;height:34px;
+  cursor:pointer;color:var(--blue);font-size:12px;line-height:1;padding:0;margin-left:6px;flex:none;
+  vertical-align:middle;-webkit-tap-highlight-color:transparent}
+.spk2:active{transform:scale(.92)}
+.dtog{min-height:38px;display:inline-flex;align-items:center;font-size:13.5px}
+input[type=search],select{font-size:16px;padding:9px 12px}
+.chip{padding:9px 14px;font-size:13px;-webkit-tap-highlight-color:transparent}
+.chip:active{transform:scale(.96)}
+#cats{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#cats::-webkit-scrollbar{display:none}
+
+@media (max-width:480px){
+  body{padding:14px 12px}
+  h1{font-size:22px}
+  .sub{font-size:13.5px;line-height:1.5}
+  .card{padding:15px 14px;border-radius:15px;margin-bottom:12px}
+  .w{font-size:22px}
+  .mean{font-size:17px;margin-top:9px}
+  .ex{font-size:16px;margin-top:11px;padding-top:11px}
+  .exk{font-size:14.5px;margin-top:4px}
+  .ipa,.kor{font-size:13.5px}
+  .turn{font-size:15px;margin-bottom:10px}
+  .tko{font-size:13.5px;margin-top:3px}
+  .meta{font-size:12.5px;gap:6px 12px;margin-top:11px}
+  .tag{font-size:11px;padding:3px 9px}
+  /* 필터가 네 줄까지 늘어났다 — sticky 바가 화면을 너무 먹는다. 세 줄로 눌러 담는다:
+     ① 세션 선택 + 뜻 가리기  ② 검색 + 속도  ③ 분류(가로 스크롤) */
+  .tools{gap:6px;margin:12px 0 8px}
+  #grp{flex:1 1 56%;min-width:0;order:1}
+  #mask{order:2;flex:0 0 auto}
+  input[type=search]{flex:1 1 62%;width:auto;min-width:0;order:3}
+  #spd{order:4;flex:0 0 auto}
+  #cats{flex:1 1 100%;order:5;padding-bottom:2px}
+  /* 「🎧 Ava 음성 640」은 정보성일 뿐이고 한 줄을 통째로 먹는다. 음성이 있는지는 ▶ 색으로 안다 */
+  #asrc{display:none}
+  .count{font-size:12.5px}
+  /* 제목이 길면(rush hour) 분류 태그가 다음 줄로 밀려 내려갔다 -> 카드 우상단에 고정한다 */
+  .card{position:relative}
+  .hd{padding-right:56px;align-items:center}
+  .tag{position:absolute;top:15px;right:14px;margin-left:0}
+  .meta{gap:4px 10px}
+}
 </style></head><body><div class="wrap">
 <h1>영어 학습장</h1>
 <div class="sub" id="sub"></div>
@@ -133,7 +193,7 @@ function render(){
       +(r.ex?'<div class="ex">'+esc(r.ex)+'<button class="spk'+mp3cls(r.ex)+'" style="margin-left:6px" data-say="'+esc(r.ex)+'" title="'+mp3ttl(r.ex)+'" aria-label="예문 듣기">&#9658;</button><div class="exk">'+esc(r.exk)+'</div></div>':'')
       +(DATA.dia[r.w]?'<div class="dia"><button class="dtog">회화 보기 ('+DATA.dia[r.w].length+'턴)</button><div class="dbody">'
         +DATA.dia[r.w].map(t=>'<div class="turn"><span class="tspk">'+esc(t.spk)+'</span>'+esc(t.en)
-        +'<button class="spk2'+mp3cls(t.en)+'" data-say="'+esc(t.en)+'" title="'+mp3ttl(t.en)+'" style="border:none;background:none;cursor:pointer;color:#9aa1ab;font-size:11px">&#9658;</button>'
+        +'<button class="spk2'+mp3cls(t.en)+'" data-say="'+esc(t.en)+'" title="'+mp3ttl(t.en)+'" aria-label="이 턴 듣기">&#9658;</button>'
         +'<div class="tko">'+esc(t.ko)+'</div></div>').join('')+'</div></div>':'')
       +'<div class="meta"><span>'+dots+' SRS '+r.srs+'</span>'
       +'<span'+(over?' class="due"':'')+'>복습 '+esc(r.due)+(over?' (도래)':'')+'</span>'
@@ -144,7 +204,7 @@ function render(){
     +'<span class="tag t스몰토크">보너스 회화</span></div>'
     +'<div class="dia" style="border:none;padding-top:4px"><button class="dtog">회화 보기 ('+DATA.dia[k].length+'턴)</button><div class="dbody">'
     +DATA.dia[k].map(t=>'<div class="turn"><span class="tspk">'+esc(t.spk)+'</span>'+esc(t.en)
-    +'<button class="spk2'+mp3cls(t.en)+'" data-say="'+esc(t.en)+'" title="'+mp3ttl(t.en)+'" style="border:none;background:none;cursor:pointer;color:#9aa1ab;font-size:11px">&#9658;</button>'
+    +'<button class="spk2'+mp3cls(t.en)+'" data-say="'+esc(t.en)+'" title="'+mp3ttl(t.en)+'" aria-label="이 턴 듣기">&#9658;</button>'
     +'<div class="tko">'+esc(t.ko)+'</div></div>').join('')+'</div></div></div>').join('') : '');
 }
 const RKEY='esc_rate', STEPS=[0.75,0.9,1,1.15];
@@ -218,7 +278,7 @@ async function playEmbedded(key,dataUrl,txt){
     s2.buffer=buf;
     s2.playbackRate.value=RATE;
     s2.connect(ACTX.destination);
-    s2.onended=function(){ if(ANODE===s2) ANODE=null; };
+    s2.onended=function(){ if(ANODE===s2) ANODE=null; clearPlaying(); };
     s2.start();
     ANODE=s2;
     stat('재생 중 · '+key.slice(0,28)+' ('+buf.duration.toFixed(1)+'초)',false);
@@ -239,6 +299,7 @@ function playFile(file,txt){
   function fail(where,e){
     if(done)return; done=true;
     if(CURAUD===a) CURAUD=null;
+    clearPlaying();
     stat('재생 실패 ['+where+'] '+(e&&e.name?e.name+': ':'')+((e&&e.message)||AUDDIR+file),true);
     ttsSay(txt);
   }
@@ -246,7 +307,7 @@ function playFile(file,txt){
     stopAll();
     a.playbackRate=RATE;
     a.preload='auto';
-    a.onended=function(){ if(CURAUD===a) CURAUD=null; };
+    a.onended=function(){ if(CURAUD===a) CURAUD=null; clearPlaying(); };
     a.onerror=function(){ fail('파일'); };
     CURAUD=a;
     const p=a.play();
@@ -254,6 +315,15 @@ function playFile(file,txt){
     stat('재생 중 · '+String(txt).slice(0,28),false);
   }catch(e){ fail('시작',e); }
 }
+/* 어느 버튼을 눌렀는지 화면에 남긴다. 폰에서는 #astat 상태표시줄이 눈에 안 들어온다.
+   ⚠️ 재생 길이를 모르므로 시간으로 끄지 않고 **다음 클릭·정지·끝남**에 끈다. */
+let PLAYBTN=null;
+function markPlaying(b){
+  if(PLAYBTN) PLAYBTN.classList.remove('playing');
+  PLAYBTN=b||null;
+  if(PLAYBTN) PLAYBTN.classList.add('playing');
+}
+function clearPlaying(){ markPlaying(null); }
 function say(t){
   const key=String(t).trim();
   const txt=key.replace(/\s+/g,' ');
@@ -282,7 +352,7 @@ if(sp){
 }
 document.addEventListener('click',e=>{
   const b=e.target.closest('.spk,.spk2');
-  if(b&&b.dataset.say){e.stopPropagation();say(b.dataset.say);return;}
+  if(b&&b.dataset.say){e.stopPropagation();markPlaying(b);say(b.dataset.say);return;}
   const tg=e.target.closest('.dtog');
   if(tg){e.stopPropagation();const bd=tg.nextElementSibling;bd.classList.toggle('open');
     tg.textContent=bd.classList.contains('open')?'회화 접기':'회화 보기 ('+bd.children.length+'턴)';return;}
@@ -304,7 +374,7 @@ document.getElementById('q').oninput=render;
 render();
 
 /* ===== PWA: 서비스워커 등록 · 캐시 버전 표시 · 음성 선캐시 ===== */
-const CACHEVER='english-v8';
+const CACHEVER='english-v10';
 (function(){
   const ver=document.getElementById('swver'), off=document.getElementById('offl');
   function vtext(t,bad){ if(!ver)return; ver.textContent=t; ver.classList.toggle('on',!bad); }
